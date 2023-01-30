@@ -15,14 +15,13 @@ function bytesToArray(bits: number) {
     return noteArray;
 }
 
-
 const NOTE_ON = 0x90
 const NOTE_OFF = 0x80
 radio.setGroup(83)
 
-
 let strip = neopixel.create(DigitalPin.P1, 16, NeoPixelMode.RGB)
 strip.showRainbow();
+
 control.inBackground(function() {
     for(let i = 0; i<64; i++){
         strip.rotate(1);
@@ -111,7 +110,11 @@ radio.onReceivedValue(function(name: string, value: number) {
     if(!PatMuted){
         if (name == "Pat") {
             sendNoteToPat(value)
-            plotPatLeds();
+            plotPatLeds(); 
+            control.inBackground(function () {
+                basic.pause(200)
+                    turnOffNotePat(value);
+            })
         } else if (name == "PatP") {
             plotPatLeds()
             let arrayOfNotes = bytesToArray(value);
@@ -119,12 +122,11 @@ radio.onReceivedValue(function(name: string, value: number) {
                 sendNoteToPat(value);
             });
             control.inBackground(function () {
-                basic.pause(40)
+                basic.pause(200)
                 arrayOfNotes.forEach(function (value) {
                     turnOffNotePat(value);
                 });
             })
-
         }
     }
  /*
